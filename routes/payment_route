@@ -1,0 +1,109 @@
+const express = require("express");
+const { Payment, paymentValidator, paymentUpdateValidator } = require("../models/payment_model");
+const { Contract } = require("../models/contract_model");
+
+const route = express.Router();
+
+route.post("/", async (req, res) => {
+  try {
+    const { error, value } = paymentValidator.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    const contract = await Contract.findById(value.contract_id);
+    if (!contract) return res.status(404).json({ message: "Contract not found!" });
+
+    if (contract.status !== "ACTIVE") {
+      return res.status(400).json({ message: "Payments can only be added to ACTIVE contracts" });
+    }
+
+    const payment = new Payment(value);
+    await payment.save();
+
+    const paidSum = await Payment.aggregate([
+      { $match: { contract_id: contract._id } },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ]);
+
+    const totalPaid = paidSum.length > 0 ? paidSum[0].total : 0;
+
+    if (totalPaid >= contract.totalDebt) {
+      contract.status = "CLOSED";
+      await contract.save();
+    }
+
+    res.status(201).send({ message: "Payment created successfully", payment });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+route.get("/", async (req, res) => {
+  try {
+    const payments = await Payment.find()
+      .populate({
+        path: "contract_id",
+        populate: { path: "customer_id", select: "fullName phone" }
+      })
+      .populate({
+        path: "contract_id",
+        populate: { path: "product_id", select: "name price" }
+      });
+
+    res.status(200).send(payments);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+route.get("/:id", async (req, res) => {
+  try {
+    const payment = await Payment.findById(req.params.id)
+      .populate({
+        path: "contract_id",
+        populate: [
+          { path: "customer_id", select: "fullName phone" },
+          { path: "product_id", select: "name price" }
+        ]
+      });
+
+    if (!payment) return res.status(404).json({ message: "Payment not found!" });
+
+    res.status(200).send(payment);
+  } catch (err) {
+    if (err.name === "CastError") {
+      return res.status(400).json({ message: "Invalid ID format" });
+    }
+    res.status(400).json({ message: err.message });
+  }
+});
+
+route.patch("/:id", async (req, res) => {
+  try {
+    const { error, value } = paymentUpdateValidator.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    const payment = await Payment.findByIdAndUpdate(req.params.id, value, { new: true });
+    if (!payment) return res.status(404).json({ message: "Payment not found!" });
+
+    res.status(200).send({ message: "Payment updated successfully", payment });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+route.delete("/:id", async (req, res) => {
+  try {
+    const payment = await Payment.findByIdAndDelete(req.params.id);
+    if (!payment) return res.status(404).json({ message: "Payment not found!" });
+
+    res.status(204).send();
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+module.exports = route;
