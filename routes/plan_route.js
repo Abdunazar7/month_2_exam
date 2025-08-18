@@ -45,9 +45,6 @@ route.get("/:id", async (req, res) => {
     if (!plan) return res.status(404).send({ message: "Plan not found" });
     res.status(200).send(plan);
   } catch (err) {
-    if (err.name === "CastError") {
-      return res.status(400).json({ message: "Invalid ID format" });
-    }
     res.status(400).send({ message: err.message });
   }
 });
@@ -66,9 +63,6 @@ route.patch("/:id", async (req, res) => {
 
     res.status(200).send({ message: "Plan updated", plan });
   } catch (err) {
-    if (err.name === "CastError") {
-      return res.status(400).json({ message: "Invalid ID format" });
-    }
     res.status(400).send({ message: err.message });
   }
 });

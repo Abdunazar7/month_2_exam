@@ -73,8 +73,6 @@ route.patch("/:id", async (req, res) => {
       .status(200)
       .send({ message: "Category updated successfully", category });
   } catch (err) {
-    if (err.name === "CastError")
-      return res.status(400).send({ message: "Invalid ID format!" });
     res.status(400).send({ message: err.message });
   }
 });

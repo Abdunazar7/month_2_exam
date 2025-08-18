@@ -78,8 +78,6 @@ route.get("/:id", async (req, res) => {
 
     res.status(200).send(product);
   } catch (err) {
-    if (err.name === "CastError")
-      return res.status(400).send({ message: "Invalid ID format!" });
     res.status(400).send({ message: err.message });
   }
 });
@@ -101,8 +99,6 @@ route.patch("/:id", async (req, res) => {
 
     res.status(200).send({ message: "Product updated successfully", product });
   } catch (err) {
-    if (err.name === "CastError")
-      return res.status(400).send({ message: "Invalid ID format!" });
     res.status(400).send({ message: err.message });
   }
 });
