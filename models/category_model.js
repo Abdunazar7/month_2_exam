@@ -21,7 +21,7 @@ const CategorySchema = new mongoose.Schema(
 
 const categoryValidator = joi.object({
   name: joi.string().required(),
-  brand_id: joi.string().hex().length(24).required(), // MongoDB ObjectId formatd
+  brand_id: joi.string().hex().length(24).required(),
   description: joi.string().optional(),
 });
 

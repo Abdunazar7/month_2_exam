@@ -1,15 +1,21 @@
 const express = require("express");
-const { Brand, brandValidator, brandUpdateValidator } = require("../models/brand_model");
+const {
+  Brand,
+  brandValidator,
+  brandUpdateValidator,
+} = require("../models/brand_model");
 
 const route = express.Router();
 
 route.post("/", async (req, res) => {
   try {
     const { error, value } = brandValidator.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error)
+      return res.status(400).json({ message: error.details[0].message });
 
     const exists = await Brand.findOne({ name: value.name });
-    if (exists) return res.status(409).json({ message: "Brand already exists!" });
+    if (exists)
+      return res.status(409).json({ message: "Brand already exists!" });
 
     const brand = new Brand(value);
     await brand.save();
@@ -52,7 +58,8 @@ route.get("/:id", async (req, res) => {
 route.patch("/:id", async (req, res) => {
   try {
     const { error, value } = brandUpdateValidator.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error)
+      return res.status(400).json({ message: error.details[0].message });
 
     const brand = await Brand.findByIdAndUpdate(req.params.id, value, {
       new: true,

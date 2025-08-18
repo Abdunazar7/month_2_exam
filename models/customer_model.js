@@ -1,36 +1,39 @@
 const mongoose = require("mongoose");
 const joi = require("joi");
 
-const CustomerSchema = new mongoose.Schema({
-  fullName: {
-    type: String,
-    required: true,
+const CustomerSchema = new mongoose.Schema(
+  {
+    fullName: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    passportId: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    otp: String,
+    otp_expires: Date,
   },
-  phone: {
-    type: String,
-    unique: true,
-    required: true,
-  },
-  email: {
-    type: String,
-    unique: true,
-    required: true, // Nodemailer uchun kerak bo'ladi
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  passportId: {
-    type: String,
-    required: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-  otp: String,
-  otp_expires: Date,
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 const customerValidator = joi.object({
   fullName: joi.string().required(),
@@ -41,14 +44,16 @@ const customerValidator = joi.object({
   address: joi.string().required(),
 });
 
-const customerUpdateValidator = joi.object({
+const customerUpdateValidator = joi
+  .object({
     fullName: joi.string().optional(),
     phone: joi.string().optional(),
     email: joi.string().email().optional(),
     password: joi.string().min(6).optional(),
     passportId: joi.string().optional(),
     address: joi.string().optional(),
-}).min(1);
+  })
+  .min(1);
 
 const Customer = mongoose.model("Customer", CustomerSchema);
 

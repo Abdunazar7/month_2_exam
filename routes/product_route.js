@@ -9,14 +9,20 @@ const {
 const route = express.Router();
 
 route.post("/upload", upload.single("image"), (req, res) => {
-  if (!req.file) return res.status(400).send({ message: "Image required" });
-  res.status(200).send({ filename: req.file.filename });
+  if (!req.file) {
+    return res.status(400).send({ message: "Image is required." });
+  }
+  res.status(200).send({
+    message: "Image uploaded successfully.",
+    filename: req.file.filename,
+  });
 });
 
 route.post("/", async (req, res) => {
   try {
     const { error, value } = productValidator.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error)
+      return res.status(400).json({ message: error.details[0].message });
 
     const product = new Product(value);
     await product.save();
@@ -29,7 +35,14 @@ route.post("/", async (req, res) => {
 
 route.get("/", async (req, res) => {
   try {
-    let { page = 1, take = 15, brand_id, category_id, minPrice, maxPrice } = req.query;
+    let {
+      page = 1,
+      take = 15,
+      brand_id,
+      category_id,
+      minPrice,
+      maxPrice,
+    } = req.query;
     page = +page;
     take = +take;
 
@@ -60,7 +73,8 @@ route.get("/:id", async (req, res) => {
       .populate("brand_id", "name")
       .populate("category_id", "name");
 
-    if (!product) return res.status(404).send({ message: "Product not found!" });
+    if (!product)
+      return res.status(404).send({ message: "Product not found!" });
 
     res.status(200).send(product);
   } catch (err) {
@@ -73,7 +87,8 @@ route.get("/:id", async (req, res) => {
 route.patch("/:id", async (req, res) => {
   try {
     const { error, value } = productUpdateValidator.validate(req.body);
-    if (error) return res.status(400).json({ message: error.details[0].message });
+    if (error)
+      return res.status(400).json({ message: error.details[0].message });
 
     const product = await Product.findByIdAndUpdate(req.params.id, value, {
       new: true,
@@ -81,7 +96,8 @@ route.patch("/:id", async (req, res) => {
       .populate("brand_id", "name")
       .populate("category_id", "name");
 
-    if (!product) return res.status(404).send({ message: "Product not found!" });
+    if (!product)
+      return res.status(404).send({ message: "Product not found!" });
 
     res.status(200).send({ message: "Product updated successfully", product });
   } catch (err) {
@@ -94,7 +110,8 @@ route.patch("/:id", async (req, res) => {
 route.delete("/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) return res.status(404).send({ message: "Product not found!" });
+    if (!product)
+      return res.status(404).send({ message: "Product not found!" });
 
     res.status(204).send();
   } catch (err) {

@@ -1,0 +1,26 @@
+[
+  {
+    "fullName": "Mamatov Davron",
+    "phone": "+998901234567",
+    "email": "davron@example.com",
+    "password": "123456",
+    "passportId": "AA1234567",
+    "address": "Toshkent sh., Chilonzor"
+  },
+  {
+    "fullName": "Karimova Dilnoza",
+    "phone": "+998909876543",
+    "email": "dilnoza@example.com",
+    "password": "password123",
+    "passportId": "AB9876543",
+    "address": "Samarqand sh., Registon"
+  },
+  {
+    "fullName": "Rustamov Azizbek",
+    "phone": "+998933334455",
+    "email": "aziz@example.com",
+    "password": "aziz2025",
+    "passportId": "AC5432167",
+    "address": "Buxoro sh., G'ijduvon"
+  }
+]

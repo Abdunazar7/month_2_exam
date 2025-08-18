@@ -4,6 +4,7 @@ const joi = require("joi");
 const PaymentSchema = new mongoose.Schema({
   contract_id: { type: mongoose.Schema.Types.ObjectId, ref: "Contract", required: true },
   amount: { type: Number, required: true },
+  method: {type: String, enum: ["CARD", "CASH"], default: "CASH"},
   paymentDate: { type: Date, default: Date.now },
   status: { type: String, enum: ["PAID", "PENDING"], default: "PAID" }
 }, { timestamps: true });

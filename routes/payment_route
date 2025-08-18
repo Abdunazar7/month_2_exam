@@ -1,5 +1,9 @@
 const express = require("express");
-const { Payment, paymentValidator, paymentUpdateValidator } = require("../models/payment_model");
+const {
+  Payment,
+  paymentValidator,
+  paymentUpdateValidator,
+} = require("../models/payment_model");
 const { Contract } = require("../models/contract_model");
 
 const route = express.Router();
@@ -12,10 +16,13 @@ route.post("/", async (req, res) => {
     }
 
     const contract = await Contract.findById(value.contract_id);
-    if (!contract) return res.status(404).json({ message: "Contract not found!" });
+    if (!contract)
+      return res.status(404).json({ message: "Contract not found!" });
 
     if (contract.status !== "ACTIVE") {
-      return res.status(400).json({ message: "Payments can only be added to ACTIVE contracts" });
+      return res
+        .status(400)
+        .json({ message: "Payments can only be added to ACTIVE contracts" });
     }
 
     const payment = new Payment(value);
@@ -23,7 +30,7 @@ route.post("/", async (req, res) => {
 
     const paidSum = await Payment.aggregate([
       { $match: { contract_id: contract._id } },
-      { $group: { _id: null, total: { $sum: "$amount" } } }
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
 
     const totalPaid = paidSum.length > 0 ? paidSum[0].total : 0;
@@ -44,11 +51,11 @@ route.get("/", async (req, res) => {
     const payments = await Payment.find()
       .populate({
         path: "contract_id",
-        populate: { path: "customer_id", select: "fullName phone" }
+        populate: { path: "customer_id", select: "fullName phone" },
       })
       .populate({
         path: "contract_id",
-        populate: { path: "product_id", select: "name price" }
+        populate: { path: "product_id", select: "name price" },
       });
 
     res.status(200).send(payments);
@@ -59,16 +66,16 @@ route.get("/", async (req, res) => {
 
 route.get("/:id", async (req, res) => {
   try {
-    const payment = await Payment.findById(req.params.id)
-      .populate({
-        path: "contract_id",
-        populate: [
-          { path: "customer_id", select: "fullName phone" },
-          { path: "product_id", select: "name price" }
-        ]
-      });
+    const payment = await Payment.findById(req.params.id).populate({
+      path: "contract_id",
+      populate: [
+        { path: "customer_id", select: "fullName phone" },
+        { path: "product_id", select: "name price" },
+      ],
+    });
 
-    if (!payment) return res.status(404).json({ message: "Payment not found!" });
+    if (!payment)
+      return res.status(404).json({ message: "Payment not found!" });
 
     res.status(200).send(payment);
   } catch (err) {
@@ -86,8 +93,11 @@ route.patch("/:id", async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const payment = await Payment.findByIdAndUpdate(req.params.id, value, { new: true });
-    if (!payment) return res.status(404).json({ message: "Payment not found!" });
+    const payment = await Payment.findByIdAndUpdate(req.params.id, value, {
+      new: true,
+    });
+    if (!payment)
+      return res.status(404).json({ message: "Payment not found!" });
 
     res.status(200).send({ message: "Payment updated successfully", payment });
   } catch (err) {
@@ -98,7 +108,8 @@ route.patch("/:id", async (req, res) => {
 route.delete("/:id", async (req, res) => {
   try {
     const payment = await Payment.findByIdAndDelete(req.params.id);
-    if (!payment) return res.status(404).json({ message: "Payment not found!" });
+    if (!payment)
+      return res.status(404).json({ message: "Payment not found!" });
 
     res.status(204).send();
   } catch (err) {
