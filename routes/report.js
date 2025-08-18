@@ -42,13 +42,16 @@ route.get("/overdue-contracts", async (req, res) => {
         (today.getFullYear() - c.startDate.getFullYear()) * 12 +
         (today.getMonth() - c.startDate.getMonth()) + 1;
 
+        console.log("Contract:", c.contractNumber, "Months passed:", monthsPassed);
       if (monthsPassed <= 0) continue;
 
       let requiredPayment = c.monthlyPayment * monthsPassed;
-
+      console.log(c.monthlyPayment);
+      
+      console.log("Required:", requiredPayment);
       const payments = await Payment.find({ contract_id: c._id });
       const paid = payments.reduce((sum, p) => sum + p.amount, 0);
-
+      console.log("Paid:", paid);
       if (paid < requiredPayment) {
         overdueList.push({
           customer: c.customer_id.fullName,

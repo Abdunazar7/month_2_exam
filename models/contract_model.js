@@ -20,6 +20,7 @@ const ContractSchema = new mongoose.Schema(
     },
     contractNumber: { type: String, unique: true, required: true },
     initialPayment: { type: Number, required: true },
+    monthlyPayment: {type: Number},
     totalDebt: { type: Number, required: true },
     startDate: { type: Date, default: Date.now },
     endDate: { type: Date },
@@ -38,6 +39,7 @@ const contractValidator = joi.object({
   plan_id: joi.string().required(),
   contractNumber: joi.string().required(),
   initialPayment: joi.number().required(),
+  monthlyPayment: joi.number(),
   totalDebt: joi.number().required(),
   startDate: joi.date().optional(),
 });

@@ -8,7 +8,6 @@ const { Product } = require("../models/product_model");
 const { Plan } = require("../models/plan_model");
 
 const route = express.Router();
-
 route.post("/", async (req, res) => {
   try {
     const { error, value } = contractValidator.validate(req.body);
@@ -23,11 +22,14 @@ route.post("/", async (req, res) => {
       return res.status(404).json({ message: "Product or Plan not found" });
     }
 
+    const startDate = value.startDate ? new Date(value.startDate) : new Date();
+
     const initialPayment = product.price * 0.25;
     const remaining = product.price - initialPayment;
     const totalDebt = remaining * (1 + plan.percentage / 100);
     const monthlyPayment = totalDebt / plan.months;
-    const endDate = new Date();
+
+    const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + plan.months);
 
     const contract = new Contract({
@@ -35,6 +37,7 @@ route.post("/", async (req, res) => {
       initialPayment,
       totalDebt,
       monthlyPayment,
+      startDate,
       endDate,
     });
 
