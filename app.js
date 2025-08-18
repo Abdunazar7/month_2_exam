@@ -17,6 +17,7 @@ const categoryRoute = require("./routes/category_route");
 const planRoute = require("./routes/plan_route");
 const contractRoute = require("./routes/contract_route");
 const paymentRoute = require("./routes/payment_route");
+const reportRoute = require("./routes/report");
 
 app.use("/customers", customerRoute);
 app.use("/products", productRoute);
@@ -25,6 +26,7 @@ app.use("/categories", categoryRoute);
 app.use("/plans", planRoute);
 app.use("/contracts", contractRoute);
 app.use("/payments", paymentRoute);
+app.use("/reports", reportRoute);
 
 const PORT = +process.env.PORT || 3000;
 app.listen(PORT, () => {

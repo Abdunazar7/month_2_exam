@@ -21,7 +21,6 @@ const ContractSchema = new mongoose.Schema(
     contractNumber: { type: String, unique: true, required: true },
     initialPayment: { type: Number, required: true },
     totalDebt: { type: Number, required: true },
-    monthlyPayment: { type: Number, required: true },
     startDate: { type: Date, default: Date.now },
     endDate: { type: Date },
     status: {
